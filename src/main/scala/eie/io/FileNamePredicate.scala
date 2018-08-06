@@ -1,4 +1,4 @@
-package eie
+package eie.io
 import java.io.{File, FilenameFilter}
 
 case class FileNamePredicate(val filter: String => Boolean) extends FilenameFilter {

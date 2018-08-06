@@ -2,8 +2,7 @@ package eie.dao
 
 import java.time.LocalDate
 
-import eie.BaseIOSpec
-
+import eie.io.BaseIOSpec
 
 class TimeRangeTest extends BaseIOSpec {
   val date = LocalDate.of(1977, 7, 8)

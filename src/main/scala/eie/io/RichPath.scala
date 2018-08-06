@@ -1,4 +1,5 @@
-package eie
+package eie.io
+
 import java.io.{OutputStream, OutputStreamWriter, PrintWriter}
 import java.nio.charset.{Charset, StandardCharsets}
 import java.nio.file._
@@ -11,7 +12,7 @@ import java.util.stream
 import scala.compat.Platform
 
 object RichPath {
-  implicit def asRichPath(p : Path) = new RichPath(p)
+  implicit def asRichPath(p: Path) = new RichPath(p)
 
 }
 class RichPath(val path: Path) {

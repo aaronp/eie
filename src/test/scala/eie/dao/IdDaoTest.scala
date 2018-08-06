@@ -1,6 +1,6 @@
 package eie.dao
-import agora.io.FromBytes
-import eie.BaseIOSpec
+
+import eie.io.{BaseIOSpec, FromBytes}
 
 import scala.collection.mutable.ListBuffer
 

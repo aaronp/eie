@@ -1,8 +1,6 @@
 package eie.dao
-import agora.io.FromBytes
-import eie.BaseIOSpec
-import eie.dao.TagDao
 import eie.dao.instances.FileTagDao
+import eie.io.{BaseIOSpec, FromBytes}
 
 import scala.util.Try
 

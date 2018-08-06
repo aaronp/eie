@@ -1,4 +1,4 @@
-package eie
+package eie.io
 
 class LowPriorityIOImplicitsTest extends BaseIOSpec with LowPriorityIOImplicits {
   "RichPath.text_=" should {

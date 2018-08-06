@@ -1,10 +1,10 @@
 package eie.dao
 
 import java.nio.file.Path
-import java.time.{LocalDateTime, ZoneOffset, ZonedDateTime}
+import java.time.{ZoneOffset, ZonedDateTime}
 
-import eie.FromBytes
 import eie.dao.instances.FileTimestampDao
+import eie.io.FromBytes
 
 /**
   * Provides a means of finding values based on a time range, as well as determining the minimum/maximum time.
@@ -61,10 +61,5 @@ object TimestampDao {
   }
 
   def now(zone: ZoneOffset = ZoneOffset.UTC) = ZonedDateTime.now(zone)
-  def fromEpochNanos(epochNanos: Long, zone: ZoneOffset = ZoneOffset.UTC): Timestamp = {
-    val second = epochNanos / 1000000
-    val nanos  = (epochNanos % 1000000).toInt
-    LocalDateTime.ofEpochSecond(second, nanos, zone).atZone(zone)
-  }
 
 }

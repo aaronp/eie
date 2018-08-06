@@ -2,15 +2,15 @@ package eie.dao.instances
 
 import java.nio.file.Path
 
-import eie.FromBytes
-import eie.implicits._
 import eie.dao.{IdDao, Persist}
+import eie.io.FromBytes
+import eie.io._
 
 class FileIdDao[T: Persist: FromBytes](dir: Path) extends IdDao[String, T] {
   override type Result       = Path
   override type RemoveResult = Path
 
-  private val fromBytes = implicitly[FromBytes[T]]
+  private val fromBytes = FromBytes[T]
   private val persist   = implicitly[Persist[T]]
 
   override def save(id: String, value: T) = {

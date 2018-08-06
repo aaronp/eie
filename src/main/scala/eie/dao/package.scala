@@ -6,5 +6,4 @@ package object dao {
   type LocalTimestamp = LocalDateTime
   type Timestamp      = ZonedDateTime
 
-
 }

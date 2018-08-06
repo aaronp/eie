@@ -3,9 +3,7 @@ package eie.dao
 import java.nio.file.Path
 import java.time.{LocalDateTime, ZoneId}
 
-import agora.io.FromBytes
-import eie.BaseIOSpec
-import eie.dao.Persist
+import eie.io.{BaseIOSpec, FromBytes, ToBytes}
 
 class TimestampDaoTest extends BaseIOSpec {
 

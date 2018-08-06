@@ -1,4 +1,7 @@
-package eie
+package eie.io
+
+import java.nio.ByteBuffer
+
 import simulacrum.typeclass
 
 /**
@@ -34,21 +37,14 @@ object ToBytes extends LowPriorityIOImplicits {
 
   implicit object IntToBytes extends ToBytes[Int] {
     def toInt(bytes: Array[Byte]): Int = {
-      val (result, _) = bytes.foldRight((0, 0)) {
-        case (nextByte, (builder, shift)) =>
-          val x: Int = nextByte << shift
-          (builder + x, shift + 1)
-      }
-      result
+      val buff = ByteBuffer.wrap(bytes)
+      buff.getInt(0)
     }
     override def bytes(value: Int): Array[Byte] = {
-      val (list, x) = (0 until 8).foldLeft((List[Byte]() -> value)) {
-        case ((array, remaining), _) =>
-          val value        = remaining.toByte
-          val newRemaining = remaining >> 4
-          (value :: array, newRemaining)
-      }
-      list.toArray
+      val buff = ByteBuffer.allocate(Integer.BYTES)
+      buff.putInt(value)
+      buff.flip()
+      buff.array()
     }
   }
 

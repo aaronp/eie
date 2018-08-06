@@ -1,5 +1,8 @@
 val repo = "eie"
 name := repo
+
+libraryDependencies ++= Dependencies.IO
+
 val username            = "aaronp"
 val scalaEleven         = "2.11.8"
 val scalaTwelve         = "2.12.4"
@@ -9,6 +12,12 @@ organization := s"com.github.${username}"
 scalaVersion := defaultScalaVersion
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 enablePlugins(GitVersioning)
+enablePlugins(GhpagesPlugin)
+enablePlugins(PamfletPlugin)
+enablePlugins(SiteScaladocPlugin)
+
+sourceDirectory in Pamflet := sourceDirectory.value / "site"
+
 autoAPIMappings := true
 exportJars := false
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-XX:MaxMetaspaceSize=1g")
@@ -16,7 +25,8 @@ git.useGitDescribe := false
 
 scalacOptions += "-Ypartial-unification"
 
-addCompilerPlugin("org.spire-math" %% "kind-projector" % "0.9.3")
+addCompilerPlugin("org.spire-math"  %% "kind-projector" % "0.9.3")
+addCompilerPlugin("org.scalamacros" % "paradise"        % "2.1.0" cross CrossVersion.full)
 
 buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
 buildInfoPackage := s"${repo}.build"
@@ -24,19 +34,21 @@ buildInfoPackage := s"${repo}.build"
 // see http://www.scalatest.org/user_guide/using_scalatest_with_sbt
 testOptions in Test += (Tests.Argument(TestFrameworks.ScalaTest, "-h", s"target/scalatest-reports", "-oN"))
 
-// put scaladocs under 'api/latest'
-sourceDirectory in Pamflet := sourceDirectory.value / "site"
-
 // see https://www.scala-sbt.org/sbt-site/api-documentation.html
 siteSubdirName in SiteScaladoc := "api/latest"
 
 scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits")
+
+packageOptions in (Compile, packageBin) += Package.ManifestAttributes("git-sha" -> git.gitHeadCommit.value.getOrElse("unknown"))
 
 git.gitTagToVersionNumber := { tag: String =>
   if (tag matches "v?[0-9]+\\..*") {
     Some(tag)
   } else None
 }
+
+coverageMinimum := 70
+coverageFailOnMinimum := true
 
 // see http://scalameta.org/scalafmt/
 scalafmtOnCompile in ThisBuild := true
@@ -47,20 +59,9 @@ scalafmtVersion in ThisBuild := "1.4.0"
 
 // see https://github.com/sbt/sbt-ghpages
 // this exposes the 'ghpagesPushSite' task
-enablePlugins(GhpagesPlugin)
+
 git.remoteRepo := s"git@github.com:$username/$repo.git"
 ghpagesNoJekyll := true
-
-enablePlugins(PamfletPlugin)
-enablePlugins(SiteScaladocPlugin)
-
-// SiteScaladocPlugin.scaladocSettings(
-//   conf,
-//   mappings in (Compile, packageDoc) in project,
-//   s"api/${project.id}"
-// )
-
-sourceDirectory in Pamflet := sourceDirectory.value / "site"
 
 lazy val settings = scalafmtSettings
 
@@ -103,16 +104,14 @@ val extraScalacOptions = List(
   "-language:reflectiveCalls", // Allow reflective calls
   "-language:higherKinds", // Allow higher-kinded types
   "-language:implicitConversions", // Allow definition of implicit functions called views
-  "-unchecked",
-  "-language:reflectiveCalls", // Allow reflective calls
-  "-language:higherKinds", // Allow higher-kinded types
-  "-language:implicitConversions" // Allow definition of implicit functions called views
+  "-unchecked"
 )
+
+releasePublishArtifactsAction := PgpKeys.publishSigned.value
 
 test in assembly := {}
 
 publishMavenStyle := true
-libraryDependencies ++= Dependencies.IO
 
 // see https://leonard.io/blog/2017/01/an-in-depth-guide-to-deploying-to-maven-central/
 pomIncludeRepository := (_ => false)

@@ -1,4 +1,4 @@
-package eie
+package eie.io
 
 import java.nio.file.Path
 import java.util.UUID
@@ -13,7 +13,7 @@ import scala.language.{implicitConversions, postfixOps}
 import scala.util.Properties
 
 /**
-  * A base class for agora tests, exposing 'withDir' and some timeouts
+  * A base class for eie tests, exposing 'withDir' and some timeouts
   *
   * See http://www.scalatest.org/user_guide/defining_base_classes
   */

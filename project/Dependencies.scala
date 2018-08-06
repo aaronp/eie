@@ -12,7 +12,7 @@ object Dependencies {
     "junit" % "junit" % "4.12" % "test"
   )
 
-  val simulacrum = "com.github.mpilquist" %% "simulacrum" % "0.12.0"
+  val simulacrum = "com.github.mpilquist" %% "simulacrum" % "0.13.0"
 
   val IO = simulacrum :: logging :: testDependencies
 

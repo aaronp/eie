@@ -1,9 +1,9 @@
-package eie
+package eie.io
 
 object Hex {
   private val hexArray: Array[Char] = "0123456789ABCDEF".toCharArray
 
-  def apply(data: Array[Byte], toDigits: Array[Char] = hexArray) = new String(toChar(data))
+  def apply(data: Array[Byte], toDigits: Array[Char] = hexArray): String = new String(toChar(data))
 
   def toChar(data: Array[Byte], toDigits: Array[Char] = hexArray): Array[Char] = {
     val len    = data.length << 1

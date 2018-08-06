@@ -1,9 +1,9 @@
 package eie.dao.instances
 import java.nio.file.Path
 
-import eie.FromBytes
-import eie.implicits._
 import eie.dao.{HasId, Persist, TagDao}
+import eie.io.FromBytes
+import eie.io._
 
 import scala.util.Try
 

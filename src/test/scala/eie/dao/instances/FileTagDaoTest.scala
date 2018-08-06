@@ -1,8 +1,6 @@
 package eie.dao.instances
-import agora.io.FromBytes
-import eie.BaseIOSpec
 import eie.dao.Persist
-import eie.dao.instances.FileTagDao
+import eie.io.{BaseIOSpec, FromBytes}
 
 class FileTagDaoTest extends BaseIOSpec {
   import eie.dao.TagDaoTest.identity

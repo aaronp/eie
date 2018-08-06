@@ -2,8 +2,8 @@ package eie.dao
 
 import java.nio.file.Path
 
-import eie.ToBytes
-import eie.implicits._
+import eie.io.ToBytes
+import eie.io._
 
 /**
   * A means of writing some data to a path

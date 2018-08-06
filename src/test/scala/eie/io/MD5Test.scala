@@ -1,4 +1,4 @@
-package eie
+package eie.io
 
 class MD5Test extends BaseIOSpec {
 

@@ -2,8 +2,8 @@ package eie.dao
 
 import java.nio.file.Path
 
-import eie.FromBytes
 import eie.dao.instances.FileIdDao
+import eie.io.FromBytes
 
 /** An interface representing a key/value store
   *

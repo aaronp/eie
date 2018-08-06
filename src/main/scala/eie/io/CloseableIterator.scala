@@ -1,4 +1,4 @@
-package eie
+package eie.io
 import java.util.concurrent.atomic.AtomicBoolean
 
 import scala.util.Try

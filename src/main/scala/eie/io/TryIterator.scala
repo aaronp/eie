@@ -1,4 +1,4 @@
-package eie
+package eie.io
 import scala.util.control.NonFatal
 
 case class TryIterator[T](iter: Iterator[T])(onErr: PartialFunction[Throwable, Nothing]) extends Iterator[T] {

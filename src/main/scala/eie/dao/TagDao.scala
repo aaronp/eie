@@ -2,8 +2,8 @@ package eie.dao
 
 import java.nio.file.Path
 
-import eie.FromBytes
-import eie.dao.instances.{FileTagDao, NoOpTagDao}
+import eie.dao.instances.FileTagDao
+import eie.io.FromBytes
 
 /**
   * Represents the ability to tag data with key/values
@@ -47,8 +47,4 @@ object TagDao {
   def apply[T: Persist: HasId: FromBytes](dir: Path, maxTagLen: Int = 15, maxTagValueLen: Int = 20): FileTagDao[T] = {
     new FileTagDao[T](dir, maxTagLen, maxTagValueLen)
   }
-
-  def apply[T]() = new instances.InMemoryTagDao[T]()
-
-  def noOp[T]: TagDao[T] = new NoOpTagDao[T]
 }

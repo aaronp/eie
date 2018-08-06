@@ -1,7 +1,6 @@
-package eie
+package eie.io
 
 import java.util.concurrent.atomic.AtomicInteger
-
 
 class LazyTest extends BaseIOSpec {
   "Lazy.close" should {

@@ -1,4 +1,4 @@
-package eie
+package eie.io
 
 import java.nio.file._
 

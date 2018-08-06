@@ -1,12 +1,11 @@
-package eie
+package eie.io
 
 import java.nio.file.Path
-import eie.implicits._
 
 /**
   * A means to pretty-print a file system layout
   */
-private[eie] trait PathTreeNode {
+private[io] trait PathTreeNode {
 
   /**
     * Creates a tree listing of a directory as:
@@ -31,7 +30,7 @@ private[eie] trait PathTreeNode {
 
 }
 
-private[eie] object PathTreeNode {
+private[io] object PathTreeNode {
   val OK = (_: Path) => true
 
   def apply(path: Path, filterOpt: Option[Path => Boolean]): PathTreeNode = {
@@ -42,10 +41,10 @@ private[eie] object PathTreeNode {
     }
   }
 }
-private[eie] case class PathTreeLeaf(leaf: Path) extends PathTreeNode {
+private[io] case class PathTreeLeaf(leaf: Path) extends PathTreeNode {
   override def asTree(indent: String = "", isLastChild: Boolean = false) = List(s"$indent+- ${leaf.fileName}")
 }
-private[eie] case class PathTreeDir(dir: Path, filterOpt: Option[Path => Boolean]) extends PathTreeNode {
+private[io] case class PathTreeDir(dir: Path, filterOpt: Option[Path => Boolean]) extends PathTreeNode {
   def children: Array[PathTreeNode] = {
     val all  = dir.children
     val kids = filterOpt.fold(all)(p => all.filter(p))

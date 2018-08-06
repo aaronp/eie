@@ -1,4 +1,4 @@
-package eie
+package eie.io
 
 import simulacrum.typeclass
 
