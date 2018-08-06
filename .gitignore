@@ -1,0 +1,7 @@
+target
+./data
+*.gz
+*.log
+.DS_Store
+.idea
+project/project/
