@@ -111,6 +111,16 @@ releasePublishArtifactsAction := PgpKeys.publishSigned.value
 
 test in assembly := {}
 
+credentials += Credentials(Path.userHome / ".sbt" / ".credentials")
+
+publishTo := {
+  val nexus = "https://oss.sonatype.org/"
+  if (isSnapshot.value)
+    Some("snapshots" at nexus + "content/repositories/snapshots")
+  else
+    Some("releases" at nexus + "service/local/staging/deploy/maven2")
+}
+
 publishMavenStyle := true
 
 // see https://leonard.io/blog/2017/01/an-in-depth-guide-to-deploying-to-maven-central/
