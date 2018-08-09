@@ -17,8 +17,6 @@ object RichPath {
 }
 class RichPath(val path: Path) {
 
-  import RichPath._
-
   def defaultWriteOpts: Set[OpenOption] = LowPriorityIOImplicits.DefaultWriteOps
 
   /** @return the path rendered as a tree
