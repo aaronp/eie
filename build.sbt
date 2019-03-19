@@ -23,7 +23,7 @@ exportJars := false
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-XX:MaxMetaspaceSize=1g")
 git.useGitDescribe := false
 
-scalacOptions += "-Ypartial-unification"
+//scalacOptions += "-Ypartial-unification"
 
 addCompilerPlugin("org.spire-math"  %% "kind-projector" % "0.9.3")
 addCompilerPlugin("org.scalamacros" % "paradise"        % "2.1.0" cross CrossVersion.full)
