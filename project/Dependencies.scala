@@ -6,8 +6,8 @@ object Dependencies {
   val logging = "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2"
 
   val testDependencies = List(
-    "org.scalactic" %% "scalactic" % "3.0.4" % "test",
-    "org.scalatest" %% "scalatest" % "3.0.4" % "test",
+    "org.scalactic" %% "scalactic" % "3.0.8" % "test",
+    "org.scalatest" %% "scalatest" % "3.0.8" % "test",
     "org.pegdown" % "pegdown" % "1.6.0" % "test",
     "junit" % "junit" % "4.12" % "test"
   )
