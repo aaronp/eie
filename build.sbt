@@ -24,7 +24,7 @@ exportJars := false
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-XX:MaxMetaspaceSize=1g")
 git.useGitDescribe := false
 
-coverallsTokenFile := Option((Path.userHome / ".sbt" / ".coveralls.args4c").asPath.toString)
+coverallsTokenFile := Option((Path.userHome / ".sbt" / ".coveralls.eie").asPath.toString)
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3")
 
