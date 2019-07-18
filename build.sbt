@@ -1,3 +1,5 @@
+import org.scoverage.coveralls.Imports.CoverallsKeys._
+
 val repo = "eie"
 name := repo
 
@@ -22,7 +24,7 @@ exportJars := false
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-XX:MaxMetaspaceSize=1g")
 git.useGitDescribe := false
 
-//scalacOptions += "-Ypartial-unification"
+coverallsTokenFile := Option((Path.userHome / ".sbt" / ".coveralls.args4c").asPath.toString)
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3")
 
