@@ -1,7 +1,6 @@
 language: scala
 scala:
-   - 2.12.3
-   - 2.11.11
+   - 2.13.0
 script:
   - sbt ++$TRAVIS_SCALA_VERSION -jvm-opts travis/jvmopts clean coverage test coverageReport makeSite
 jdk:
