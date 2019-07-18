@@ -4,11 +4,9 @@ name := repo
 libraryDependencies ++= Dependencies.IO
 
 val username            = "aaronp"
-val scalaEleven         = "2.11.8"
-val scalaTwelve         = "2.12.8"
 val scalaThirteen       = "2.13.0"
 val defaultScalaVersion = scalaThirteen
-crossScalaVersions := Seq(scalaEleven, scalaTwelve, scalaThirteen)
+crossScalaVersions := Seq(scalaThirteen)
 organization := s"com.github.${username}"
 scalaVersion := defaultScalaVersion
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
@@ -26,8 +24,11 @@ git.useGitDescribe := false
 
 //scalacOptions += "-Ypartial-unification"
 
-addCompilerPlugin("org.spire-math"  %% "kind-projector" % "0.9.3")
-addCompilerPlugin("org.scalamacros" % "paradise"        % "2.1.0" cross CrossVersion.full)
+addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3")
+
+scalacOptions += "-Ymacro-annotations"
+
+//addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 
 buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
 buildInfoPackage := s"${repo}.build"

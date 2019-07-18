@@ -3,7 +3,7 @@ import sbt._
 object Dependencies {
 
   //https://github.com/typesafehub/scala-logging
-  val logging = "com.typesafe.scala-logging" %% "scala-logging" % "3.7.2"
+  val logging = "com.typesafe.scala-logging" %% "scala-logging" % "3.9.2"
 
   val testDependencies = List(
     "org.scalactic" %% "scalactic" % "3.0.8" % "test",
@@ -12,7 +12,7 @@ object Dependencies {
     "junit" % "junit" % "4.12" % "test"
   )
 
-  val simulacrum = "com.github.mpilquist" %% "simulacrum" % "0.13.0"
+  val simulacrum = "com.github.mpilquist" %% "simulacrum" % "0.19.0"
 
   val IO = simulacrum :: logging :: testDependencies
 
