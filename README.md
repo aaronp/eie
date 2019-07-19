@@ -17,31 +17,15 @@ You can read more about the design and check the documentation [here](https://aa
 
 ## Usage
 
-```
-libraryDependencies += "com.github.aaronp" %% "eie" % "0.0.3"
-```
-
-in maven:
-
-```
-<dependency>
-  <groupId>com.github.aaronp</groupId>
-  <artifactId>eie_2.12</artifactId>
-  <version>0.0.3</version>
-</dependency>
-```
-
-
-And then:
 
 ```
   import eie.io._
 
-  val file: Path = "my/file.txt".asPath.text = "hello world!"
+  val file: java.nio.Path = "my/file.txt".asPath.text = "hello world!"
 
   val contents: String = file.text
 
-  file.delete() // should return 'true'
+  file.delete()
 ```
 
 ## Building
