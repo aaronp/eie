@@ -33,5 +33,5 @@ You can read more about the design and check the documentation [here](https://aa
 You can build/test/etc using the usual suspects:
 
 ```
-sbt clean coveraget test coverageReport doc
+sbt clean coverage test coverageReport doc
 ```
