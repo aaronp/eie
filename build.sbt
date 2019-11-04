@@ -6,9 +6,10 @@ name := repo
 libraryDependencies ++= Dependencies.IO
 
 val username            = "aaronp"
+val scalaTwelve         = "2.12.10"
 val scalaThirteen       = "2.13.0"
 val defaultScalaVersion = scalaThirteen
-crossScalaVersions := Seq(scalaThirteen)
+crossScalaVersions := Seq(scalaTwelve, scalaThirteen)
 organization := s"com.github.${username}"
 scalaVersion := defaultScalaVersion
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
