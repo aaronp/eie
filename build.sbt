@@ -29,7 +29,9 @@ coverallsTokenFile := Option((Path.userHome / ".sbt" / ".coveralls.eie").asPath.
 
 addCompilerPlugin("org.typelevel" %% "kind-projector" % "0.10.3")
 
-//scalacOptions += "-Ymacro-annotations"
+scalacOptions ++= List(scalaVersion.value)
+  .filter(_.contains("2.13"))
+  .map(_ => "-Ymacro-annotations")
 
 //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 

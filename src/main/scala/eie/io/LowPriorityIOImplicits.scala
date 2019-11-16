@@ -2,8 +2,6 @@ package eie.io
 
 import java.nio.file._
 
-import eie.dao.Timestamp
-
 /**
   * Contains some 'pimped' types (adding <string>.asPath), and RichPath
   */
@@ -27,7 +25,7 @@ trait LowPriorityIOImplicits {
 
   implicit def asRichPath(path: Path) = new RichPath(path)
 
-  implicit def timestampOrdering = Ordering.by[Timestamp, Long](_.toEpochSecond)
+//  implicit def timestampOrdering = Ordering.by[Timestamp, Long](_.toEpochSecond)
 
 }
 

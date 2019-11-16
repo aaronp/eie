@@ -2,14 +2,12 @@ package eie.io
 
 import java.nio.ByteBuffer
 
-import simulacrum.typeclass
-
 /**
   * Typeclass to serialize a type to bytes
   *
   * @tparam T the value to convert
   */
-@typeclass trait ToBytes[T] {
+trait ToBytes[T] {
 
   /**
     * Converts the T to bytes
@@ -30,6 +28,8 @@ import simulacrum.typeclass
 }
 
 object ToBytes extends LowPriorityIOImplicits {
+
+  def apply[T](implicit inst: ToBytes[T]): ToBytes[T] = inst
 
   implicit object Utf8String extends ToBytes[String] {
     override def bytes(value: String): Array[Byte] = value.getBytes("UTF-8")

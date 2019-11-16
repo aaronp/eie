@@ -1,7 +1,5 @@
 package eie.io
 
-import simulacrum.typeclass
-
 import scala.util.{Success, Try}
 
 /**
@@ -9,7 +7,7 @@ import scala.util.{Success, Try}
   *
   * @tparam T
   */
-@typeclass trait FromBytes[T] {
+trait FromBytes[T] {
 
   /**
     * Unmarshalls the byte array into the given type
@@ -28,6 +26,8 @@ import scala.util.{Success, Try}
 }
 
 object FromBytes {
+
+  def apply[T](implicit inst: FromBytes[T]): FromBytes[T] = inst
 
   def lift[T](f: Array[Byte] => Try[T]) = new FromBytes[T] {
     override def read(bytes: Array[Byte]) = f(bytes)
