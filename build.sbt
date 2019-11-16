@@ -52,7 +52,7 @@ git.gitTagToVersionNumber := { tag: String =>
   } else None
 }
 
-coverageMinimum := 70
+coverageMinimum := 55
 coverageFailOnMinimum := true
 
 // see http://scalameta.org/scalafmt/
