@@ -7,10 +7,6 @@ import java.nio.file._
   */
 trait LowPriorityIOImplicits {
 
-  implicit def strAsToBytes: ToBytes[Array[Byte]] = new ToBytes[Array[Byte]] {
-    override def bytes(value: Array[Byte]): Array[Byte] = value
-  }
-
   /**
     * exposes 'toPath' on strings, for e.g.
     * {{{

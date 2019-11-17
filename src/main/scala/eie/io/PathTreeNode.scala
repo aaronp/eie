@@ -31,7 +31,6 @@ private[io] trait PathTreeNode {
 }
 
 private[io] object PathTreeNode {
-  val OK = (_: Path) => true
 
   def apply(path: Path, filterOpt: Option[Path => Boolean]): PathTreeNode = {
     if (path.isDir) {

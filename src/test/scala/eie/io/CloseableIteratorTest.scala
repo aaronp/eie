@@ -8,6 +8,26 @@ import scala.util.Try
 
 class CloseableIteratorTest extends WordSpec with Matchers {
 
+  "CloseableIterator.take" should {
+    "still close the iterator" in {
+      var closed = false
+      val iter = CloseableIterator(Iterator(1, 2, 3)) {
+        closed = true
+      }
+      iter.take(1).toList shouldBe List(1)
+      closed shouldBe true
+    }
+  }
+  "CloseableIterator.slice" should {
+    "still close the iterator" in {
+      var closed = false
+      val iter = CloseableIterator(Iterator(1, 2, 3, 4, 5)) {
+        closed = true
+      }
+      iter.slice(2, 3).toList shouldBe List(3)
+      closed shouldBe true
+    }
+  }
   "CloseableIterator" should {
     "propagate exceptions after closing" in {
       object Bang extends Exception
