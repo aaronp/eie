@@ -101,8 +101,7 @@ class RichPathTest extends BaseIOSpec {
                          >             +- foo.txt""".stripMargin('>')
         trim(dir.resolve("test").renderTree()) shouldBe trim(expected)
 
-
-        val actual = dir.resolve("test").renderTree(f => f.isDir || f.fileName == "fileA.txt")
+        val actual           = dir.resolve("test").renderTree(f => f.isDir || f.fileName == "fileA.txt")
         val filteredExpected = """ test
                                  >      +- a
                                  >         +- b1
@@ -134,6 +133,16 @@ class RichPathTest extends BaseIOSpec {
       }
     }
   }
+  "RichPath.findFirst" should {
+    "find nested files" in {
+      withDir { dir =>
+        val a = dir.resolve("abc/b/c/file.txt").text = "contents"
+        dir.resolve("abc/b/c/d/e/file.txt").text = "contents"
+        dir.findFirst(10)(_.fileName == "file.txt") shouldBe Some(a)
+        a.parents.take(3).map(_.fileName) should contain inOrder ("c", "b", "abc")
+      }
+    }
+  }
   "RichPath.childrenMatchingName" should {
     "return the children matching the predicate" in {
       withDir { dir =>
@@ -144,6 +153,26 @@ class RichPathTest extends BaseIOSpec {
         val file = dir.resolve("meh.txt").text = "this is a file"
         file.childrenMatchingName(_ => true) shouldBe empty
         dir
+      }
+    }
+  }
+  "RichPath.moveTo" should {
+    "move files to a directory" in {
+      withDir { dir =>
+        val file        = dir.resolve("abc/b/c.file.txt").text = "contents"
+        val moved       = file.moveTo(dir)
+        val List(check) = dir.nestedFiles(10).toList
+        check.parent shouldBe Some(dir)
+      }
+    }
+    "move files to a new file location" in {
+      withDir { dir =>
+        val file  = dir.resolve("abc/b/c.file.txt").text = "contents"
+        val moved = file.moveTo(dir.resolve("also.renamed"))
+        moved.fileName shouldBe "also.renamed"
+        val List(check) = dir.nestedFiles(10).toList
+        check.parent shouldBe Some(dir)
+        check.fileName shouldBe "also.renamed"
       }
     }
   }

@@ -4,13 +4,12 @@ import java.io.{OutputStream, OutputStreamWriter, PrintWriter}
 import java.nio.charset.{Charset, StandardCharsets}
 import java.nio.file._
 import java.nio.file.attribute.{BasicFileAttributes, FileAttribute, FileTime, PosixFilePermission}
-import java.time.{ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
+import java.time.{ZoneId, ZonedDateTime}
 import java.util.function.BiPredicate
 import java.util.stream
 
 import scala.collection.JavaConverters._
-
 
 object RichPath {
   implicit def asRichPath(p: Path) = new RichPath(p)
@@ -306,6 +305,11 @@ final class RichPath(val path: Path) {
   }
 
   def moveTo(dest: Path, options: CopyOption*) = {
-    java.nio.file.Files.move(path, dest, options: _*)
+    val target = if (dest.isDir) {
+      dest.resolve(path.fileName)
+    } else {
+      dest
+    }
+    java.nio.file.Files.move(path, target, options: _*)
   }
 }
