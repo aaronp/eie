@@ -29,8 +29,8 @@ object FromBytes {
 
   def apply[T](implicit inst: FromBytes[T]): FromBytes[T] = inst
 
-  def lift[T](f: Array[Byte] => Try[T]) = new FromBytes[T] {
-    override def read(bytes: Array[Byte]) = f(bytes)
+  def lift[T](f: Array[Byte] => T) = new FromBytes[T] {
+    override def read(bytes: Array[Byte]) = Try(f(bytes))
   }
 
   implicit object Utf8String extends FromBytes[String] {

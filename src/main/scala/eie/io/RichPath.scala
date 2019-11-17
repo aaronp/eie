@@ -4,32 +4,27 @@ import java.io.{OutputStream, OutputStreamWriter, PrintWriter}
 import java.nio.charset.{Charset, StandardCharsets}
 import java.nio.file._
 import java.nio.file.attribute.{BasicFileAttributes, FileAttribute, FileTime, PosixFilePermission}
-import java.time.ZoneId
+import java.time.{ZoneId, ZonedDateTime}
 import java.time.format.DateTimeFormatter
 import java.util.function.BiPredicate
 import java.util.stream
 
-import scala.compat.Platform
+import scala.collection.JavaConverters._
+
 
 object RichPath {
   implicit def asRichPath(p: Path) = new RichPath(p)
 
 }
-class RichPath(val path: Path) {
+final class RichPath(val path: Path) {
 
   def defaultWriteOpts: Set[OpenOption] = LowPriorityIOImplicits.DefaultWriteOps
 
   /** @return the path rendered as a tree
     */
-  def renderTree(): String = PathTreeNode(path, None).asTree().mkString(Platform.EOL)
+  def renderTree(): String = PathTreeNode(path, None).asTree().mkString(System.lineSeparator)
 
-  def renderTree(filter: Path => Boolean): String = PathTreeNode(path, Option(filter)).asTree().mkString(Platform.EOL)
-
-  import scala.collection.JavaConverters._
-
-  /** @return how many parents this path has
-    */
-  def depth: Int = parent.fold(1)(_.depth + 1)
+  def renderTree(filter: Path => Boolean): String = PathTreeNode(path, Option(filter)).asTree().mkString(System.lineSeparator)
 
   def setText(str: String, charset: Charset = StandardCharsets.UTF_8, options: Set[OpenOption] = defaultWriteOpts) = {
     setBytes(str.getBytes(charset), options)
@@ -65,26 +60,57 @@ class RichPath(val path: Path) {
     Files.createLink(link, path)
   }
 
+  /** @return the bytes of this file or empty if ths file doesn't exist
+    */
   def bytes = if (exists()) Files.readAllBytes(path) else Array.empty[Byte]
 
+  /**
+    * Supports "someFile.txt".asPath.byte = Array[Byte](1,2,3)
+    * @param content the content of the file to set
+    * @return this path
+    */
   def bytes_=(content: Array[Byte]) = {
     createIfNotExists()
     setBytes(content)
   }
 
-  def text_=(str: String): Path = {
+  /**
+    * Supports "someFile.txt".asPath.text = "some content"
+    * The file will be created if it doesn't exist
+    * @param content the content of the file to set
+    * @return this path
+    */
+  def text_=(content: String): Path = {
     createIfNotExists()
-    setText(str)
+    setText(content)
   }
 
+  /** @param charset the charset of the file
+    * @return the text of the file using the charset
+    */
   def getText(charset: Charset = StandardCharsets.UTF_8): String = new String(bytes, charset)
 
+  /** @return the text of the file using the charset
+    */
   def text: String = getText()
 
-  def append(text: String): Path =
-    withOutputStream(_.write(text.getBytes))(Set(StandardOpenOption.APPEND))
+  /**
+    * @param text the text to append
+    * @return this file (builder pattern) with the text appended
+    */
+  def append(text: String): Path = {
+    withOutputStream { os =>
+      os.write(text.getBytes)
+      path
+    }(Set(StandardOpenOption.APPEND))
+  }
 
-  def withOutputStream(withOS: OutputStream => Unit)(implicit options: Set[OpenOption]): Path = {
+  /**
+    * @param withOS the function which operates on this output stream
+    * @param options the file options for opening the stream
+    * @return the result of the
+    */
+  def withOutputStream[A](withOS: OutputStream => A)(implicit options: Set[OpenOption]): A = {
     val os = outputStream(options.toList: _*)
     try {
       withOS(os)
@@ -92,9 +118,13 @@ class RichPath(val path: Path) {
       os.flush()
       os.close()
     }
-    path
   }
 
+  /** @param maxDepth the maximum file depth to file
+    * @param followLinks should we follow symbolic/hard links?
+    * @param p the file matching predicate
+    * @return the files under this directory which match the predicate
+    */
   def search(maxDepth: Int, followLinks: Boolean = true)(p: Path => Boolean): Iterator[Path] = {
     val predicate = new BiPredicate[Path, BasicFileAttributes] {
       override def test(t: Path, ignored: BasicFileAttributes): Boolean = p(t)
@@ -138,10 +168,6 @@ class RichPath(val path: Path) {
     }
   }
 
-  def isEmptyDir = {
-    isDir && children.isEmpty
-  }
-
   def findFirst(depth: Int)(p: Path => Boolean) = {
     object check extends BiPredicate[Path, BasicFileAttributes] {
       override def test(t: Path, u: BasicFileAttributes): Boolean = {
@@ -172,10 +198,6 @@ class RichPath(val path: Path) {
 
   def mkDirs(atts: Set[FileAttribute[_]]): Path = Files.createDirectories(path, atts.toList: _*)
 
-  def mkDir(atts: FileAttribute[_]*): Path = {
-    if (!exists()) Files.createDirectory(path, atts: _*) else path
-  }
-
   def setFilePermissions(permission: PosixFilePermission, theRest: PosixFilePermission*): Path = {
     setFilePermissions(theRest.toSet + permission)
   }
@@ -185,6 +207,13 @@ class RichPath(val path: Path) {
   }
 
   def grantAllPermissions: Path = setFilePermissions(PosixFilePermission.values().toSet)
+
+  /** @param linkOpts
+    * @return the file permissions
+    */
+  def permissions(linkOpts: LinkOption*): Set[PosixFilePermission] = {
+    Files.getPosixFilePermissions(path, linkOpts: _*).asScala.toSet
+  }
 
   def size = Files.size(path)
 
@@ -214,6 +243,9 @@ class RichPath(val path: Path) {
 
   def children: Array[Path] = if (isDir) path.toFile.listFiles().map(_.toPath) else Array.empty
 
+  /** @param filenameFilter a filename predicate
+    * @return the children of this directory which match the filename, or an empty path if this is not a directory
+    */
   def childrenMatchingName(filenameFilter: String => Boolean): Array[Path] = {
     if (isDir) {
       val pred     = FileNamePredicate(filenameFilter)
@@ -232,12 +264,29 @@ class RichPath(val path: Path) {
 
   def created = attributes.creationTime.toInstant
 
-  def createdUTC = created.atZone(ZoneId.of("UTC"))
+  def createdUTC: ZonedDateTime = created.atZone(ZoneId.of("UTC"))
 
   def createdString = DateTimeFormatter.ISO_ZONED_DATE_TIME.format(createdUTC)
 
   def fileName = path.getFileName.toString
 
+  /**
+    * This function supports the syntax:
+    * {{{
+    *   "path/to/some/file.txt".asPath
+    * }}}
+    * @param thunk some function which operates on a file
+    * @tparam T
+    * @return the result of the function
+    */
+  def deleteAfter[T](thunk: Path => T): T = {
+    try {
+      thunk(path)
+    } finally {
+      delete()
+    }
+
+  }
   def delete(recursive: Boolean = true): Path = {
     if (isDir && recursive) {
       children.foreach(_.delete())
