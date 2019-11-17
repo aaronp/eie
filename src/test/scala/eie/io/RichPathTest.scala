@@ -13,6 +13,27 @@ class RichPathTest extends BaseIOSpec {
       }
     }
   }
+  "RichPath.inputStream" should {
+    "open a file input stream" in {
+      withDir { dir =>
+        val is = (dir.resolve("file.txt").text = "hi\nthere").inputStream()
+        scala.io.Source.fromInputStream(is).getLines().toList shouldBe List("hi", "there")
+      }
+    }
+  }
+  "RichPath.text" should {
+    "get and set file contents" in {
+      withDir { dir =>
+        val file = dir.resolve("file.txt").text = """hello
+            |world
+            |123""".stripMargin
+        file.text shouldBe """hello
+                             |world
+                             |123""".stripMargin
+        file.lines.toList shouldBe List("hello", "world", "123")
+      }
+    }
+  }
   "RichPath.deleteAfter" should {
     "delete the file after the thunk completes" in {
       val testDir = s"./target/${getClass.getSimpleName}${System.currentTimeMillis()}".asPath.mkDirs().deleteAfter { dir =>
@@ -74,6 +95,8 @@ class RichPathTest extends BaseIOSpec {
         withClue(s"${file.createdUTC} shouldBe between $before and $after") {
           file.createdUTC.isAfter(after) shouldBe false
           file.createdUTC.isBefore(before) shouldBe false
+          file.lastModifiedMillis should be >= before.toInstant.toEpochMilli
+          file.lastModifiedMillis should be <= after.toInstant.toEpochMilli
         }
       }
     }

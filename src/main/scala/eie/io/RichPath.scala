@@ -1,20 +1,20 @@
 package eie.io
 
-import java.io.{OutputStream, OutputStreamWriter, PrintWriter}
+import java.io.{InputStream, OutputStream, OutputStreamWriter, PrintWriter}
 import java.nio.charset.{Charset, StandardCharsets}
 import java.nio.file._
 import java.nio.file.attribute.{BasicFileAttributes, FileAttribute, FileTime, PosixFilePermission}
-import java.time.format.DateTimeFormatter
-import java.time.{ZoneId, ZonedDateTime}
+import java.time.{Instant, ZoneId, ZonedDateTime}
 import java.util.function.BiPredicate
 import java.util.stream
 
 import scala.collection.JavaConverters._
 
-object RichPath {
-  implicit def asRichPath(p: Path) = new RichPath(p)
-
-}
+/**
+  * A DSL to make working with NIO paths a bit easier/fluid
+  *
+  * @param path
+  */
 final class RichPath(val path: Path) {
 
   def defaultWriteOpts: Set[OpenOption] = LowPriorityIOImplicits.DefaultWriteOps
@@ -154,12 +154,21 @@ final class RichPath(val path: Path) {
     new PrintWriter(writer, autoFlush)
   }
 
-  def inputStream(options: OpenOption*) = Files.newInputStream(path, options: _*)
+  /** @param options
+    * @return an input stream for this path
+    */
+  def inputStream(options: OpenOption*): InputStream = Files.newInputStream(path, options: _*)
 
+  /** @return a lazy iterator of the path contents
+    */
   def lines: Iterator[String] = Files.lines(path).iterator().asScala
 
+  /** @return the parent path if this isn't the root path
+    */
   def parent = Option(path.getParent)
 
+  /** @return a stream of the parents
+    */
   def parents: Stream[Path] = {
     parent match {
       case None    => Stream.empty
@@ -167,7 +176,12 @@ final class RichPath(val path: Path) {
     }
   }
 
-  def findFirst(depth: Int)(p: Path => Boolean) = {
+  /** find the first matching path under this directory
+    * @param depth the maximum depth to search to
+    * @param p the file matching predicate
+    * @return the first found path
+    */
+  def findFirst(depth: Int)(p: Path => Boolean): Option[Path] = {
     object check extends BiPredicate[Path, BasicFileAttributes] {
       override def test(t: Path, u: BasicFileAttributes): Boolean = {
         p(t)
@@ -183,6 +197,10 @@ final class RichPath(val path: Path) {
     }
   }
 
+  /** create this file if it does not already exist
+    * @param atts the file attributes to use if the file must be created
+    * @return this path
+    */
   def createIfNotExists(atts: FileAttribute[_]*): Path = {
     if (!exists()) {
       mkParentDirs()
@@ -191,8 +209,18 @@ final class RichPath(val path: Path) {
     path
   }
 
+  /** Create the parent directories if required by this path
+    * e.g. if the path is 'tmp/foo/bar.txt' then 'tmp/foo' will be created, but not bar.txt
+    *
+    * @param atts the directory attributes
+    * @return this path
+    */
   def mkParentDirs(atts: FileAttribute[_]*) = parent.foreach(_.mkDirs(atts: _*))
 
+  /** Creates all required directories represented by this path
+    *  @param atts the directory attributes
+    * @return this path
+    */
   def mkDirs(atts: FileAttribute[_]*): Path = Files.createDirectories(path, atts: _*)
 
   def mkDirs(atts: Set[FileAttribute[_]]): Path = Files.createDirectories(path, atts.toList: _*)
@@ -216,8 +244,6 @@ final class RichPath(val path: Path) {
 
   def size = Files.size(path)
 
-  def touch(attributes: FileAttribute[_]*) = Files.createFile(path, attributes: _*)
-
   def exists(linkOpts: LinkOption*) = Files.exists(path, linkOpts: _*)
 
   def isDir = exists() && Files.isDirectory(path)
@@ -240,6 +266,8 @@ final class RichPath(val path: Path) {
     }
   }
 
+  /** @return the children if this path represents a directory
+    */
   def children: Array[Path] = if (isDir) path.toFile.listFiles().map(_.toPath) else Array.empty
 
   /** @param filenameFilter a filename predicate
@@ -255,18 +283,28 @@ final class RichPath(val path: Path) {
 
   def childrenIter = if (isDir) Files.list(path).iterator().asScala else Iterator.empty
 
+  /** @return the path's attributes
+    */
   def attributes: BasicFileAttributes = Files.readAttributes(path, classOf[BasicFileAttributes])
 
+  /** @return the last modified time
+    */
   def lastModified: FileTime = attributes.lastModifiedTime()
 
-  def lastModifiedMillis = lastModified.toMillis
+  /** @return the last modified time as epoch millis
+    */
+  def lastModifiedMillis: Long = lastModified.toMillis
 
-  def created = attributes.creationTime.toInstant
+  /** @return the path created instant
+    */
+  def created: Instant = attributes.creationTime.toInstant
 
+  /** @return the created instant as a UTC date
+    */
   def createdUTC: ZonedDateTime = created.atZone(ZoneId.of("UTC"))
 
-  def createdString = DateTimeFormatter.ISO_ZONED_DATE_TIME.format(createdUTC)
-
+  /** @return the file name
+    */
   def fileName = path.getFileName.toString
 
   /**
@@ -286,6 +324,11 @@ final class RichPath(val path: Path) {
     }
 
   }
+
+  /** recursively (if set) delete this path
+    * @param recursive set to true to recurse
+    * @return this path
+    */
   def delete(recursive: Boolean = true): Path = {
     if (isDir && recursive) {
       children.foreach(_.delete())
@@ -296,6 +339,9 @@ final class RichPath(val path: Path) {
     path
   }
 
+  /** @param followLinks
+    * @return
+    */
   def deleteFile(followLinks: Boolean = false): Path = {
     val exists = if (followLinks) path.exists() else path.exists(LinkOption.NOFOLLOW_LINKS)
     if (exists) {
@@ -304,6 +350,10 @@ final class RichPath(val path: Path) {
     path
   }
 
+  /** @param dest the destination directory or file.
+    * @param options the copy options
+    * @return the moved path
+    */
   def moveTo(dest: Path, options: CopyOption*) = {
     val target = if (dest.isDir) {
       dest.resolve(path.fileName)
