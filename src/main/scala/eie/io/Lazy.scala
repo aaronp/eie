@@ -1,7 +1,6 @@
 package eie.io
 
-import com.typesafe.scalalogging.LazyLogging
-
+import scala.util.Try
 import scala.util.control.NonFatal
 
 /**
@@ -31,7 +30,7 @@ import scala.util.control.NonFatal
   * @param mkValue
   * @tparam T
   */
-final class Lazy[T](mkValue: => T) extends AutoCloseable with LazyLogging {
+final class Lazy[T](mkValue: => T) extends AutoCloseable {
 
   @volatile private var _created = false
   lazy val value = {
@@ -51,13 +50,8 @@ final class Lazy[T](mkValue: => T) extends AutoCloseable with LazyLogging {
   def created() = _created
 
   override def close(): Unit = foreach {
-    case auto: AutoCloseable =>
-      try {
-        auto.close()
-      } catch {
-        case NonFatal(e) => logger.error(s"${auto} threw on close: ${e.getMessage}", e)
-      }
-    case _ =>
+    case auto: AutoCloseable => Try(auto.close())
+    case _                   =>
   }
 }
 

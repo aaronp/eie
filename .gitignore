@@ -5,3 +5,7 @@ target
 .DS_Store
 .idea
 project/project/
+.bsp
+.bloop
+.metals
+.vscode

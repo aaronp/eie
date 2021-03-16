@@ -2,8 +2,35 @@ package eie.io
 
 import java.nio.file.attribute.PosixFilePermission
 import java.time.{ZoneId, ZonedDateTime}
+import org.scalactic.Prettifier.default
+import org.scalatest.matchers.should.Matchers
+
+object RichPathTest extends Matchers {
+
+  def trim(text: String): String = {
+    val padding = text.linesIterator.map(_.takeWhile(_.isWhitespace).size).min.toInt
+    def sanitise(x: String) =
+      x.drop(padding)
+        .replace("😃", "|")
+        .replace(" ", ".")
+
+    text.linesIterator.map(sanitise).mkString(System.lineSeparator())
+  }
+
+  def check(actualFull: String, expectedFull: String) = {
+    val actual   = trim(actualFull)
+    val expected = trim(expectedFull)
+    actual.linesIterator.size shouldBe expected.linesIterator.size
+    actual.linesIterator.zip(expected.linesIterator).foreach {
+      case (a, e) => a shouldBe e
+    }
+  }
+
+}
 
 class RichPathTest extends BaseIOSpec {
+
+  import RichPathTest._
 
   "RichPath.size" should {
     "return the file size" in {
@@ -108,31 +135,27 @@ class RichPathTest extends BaseIOSpec {
         dir.resolve("test/a/b1/c2/fileB.txt").text = "hi"
         dir.resolve("test/a/b2/foo.txt").text = "hi"
 
-        def trim(text: String) = {
-          val padding = text.linesIterator.map(_.takeWhile(_.isWhitespace).size).min
-          text.linesIterator.map(_.drop(padding)).mkString(System.lineSeparator())
-        }
+        val expected: String = """test
+                         |     +- a
+                         |        +- b1
+                         |        😃    +- c1
+                         |        😃        +- fileA.txt
+                         |        😃    +- c2
+                         |        😃        +- fileB.txt
+                         |        +- b2
+                         |            +- foo.txt""".stripMargin
 
-        val expected = """ test
-                         >      +- a
-                         >         +- b1
-                         >         |    +- c1
-                         >         |        +- fileA.txt
-                         >         |    +- c2
-                         >         |        +- fileB.txt
-                         >         +- b2
-                         >             +- foo.txt""".stripMargin('>')
-        trim(dir.resolve("test").renderTree()) shouldBe trim(expected)
+        check(dir.resolve("test").renderTree(), expected)
 
-        val actual           = dir.resolve("test").renderTree(f => f.isDir || f.fileName == "fileA.txt")
-        val filteredExpected = """ test
-                                 >      +- a
-                                 >         +- b1
-                                 >         |    +- c1
-                                 >         |        +- fileA.txt
-                                 >         |    +- c2
-                                 >         +- b2""".stripMargin('>')
-        trim(actual) shouldBe trim(filteredExpected)
+        val actual                   = dir.resolve("test").renderTree(f => f.isDir || f.fileName == "fileA.txt")
+        val filteredExpected: String = """test
+                                 |     +- a
+                                 |        +- b1
+                                 |        😃    +- c1
+                                 |        😃        +- fileA.txt
+                                 |        😃    +- c2
+                                 |        +- b2""".stripMargin
+        check(actual, filteredExpected)
       }
     }
   }
@@ -159,9 +182,9 @@ class RichPathTest extends BaseIOSpec {
   "RichPath.findFirst" should {
     "find nested files" in {
       withDir { dir =>
-        val a = dir.resolve("abc/b/c/file.txt").text = "contents"
+        val a = dir.resolve("abc/b/c/file1.txt").text = "contents"
         dir.resolve("abc/b/c/d/e/file.txt").text = "contents"
-        dir.findFirst(10)(_.fileName == "file.txt") shouldBe Some(a)
+        dir.findFirst(10)(_.fileName == "file1.txt") shouldBe Some(a)
         a.parents.take(3).map(_.fileName) should contain inOrder ("c", "b", "abc")
       }
     }

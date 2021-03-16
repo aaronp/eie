@@ -2,11 +2,9 @@ package eie.io
 
 import java.util.NoSuchElementException
 
-import org.scalatest.{Matchers, WordSpec}
-
 import scala.util.Try
 
-class CloseableIteratorTest extends WordSpec with Matchers {
+class CloseableIteratorTest extends BaseIOSpec {
 
   "CloseableIterator.take" should {
     "still close the iterator" in {

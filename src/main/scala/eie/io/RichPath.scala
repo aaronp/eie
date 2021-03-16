@@ -6,9 +6,8 @@ import java.nio.file._
 import java.nio.file.attribute.{BasicFileAttributes, FileAttribute, FileTime, PosixFilePermission}
 import java.time.{Instant, ZoneId, ZonedDateTime}
 import java.util.function.BiPredicate
-import java.util.stream
-
 import scala.collection.JavaConverters._
+import scala.language.implicitConversions
 
 /**
   * A DSL to make working with NIO paths a bit easier/fluid
@@ -16,6 +15,8 @@ import scala.collection.JavaConverters._
   * @param path
   */
 final class RichPath(val path: Path) {
+
+  def this(path: String) = this(Paths.get(path))
 
   def defaultWriteOpts: Set[OpenOption] = LowPriorityIOImplicits.DefaultWriteOps
 
@@ -128,7 +129,7 @@ final class RichPath(val path: Path) {
     val predicate = new BiPredicate[Path, BasicFileAttributes] {
       override def test(t: Path, ignored: BasicFileAttributes): Boolean = p(t)
     }
-    val found: stream.Stream[Path] = if (followLinks) {
+    val found: java.util.stream.Stream[Path] = if (followLinks) {
       Files.find(path, maxDepth, predicate, FileVisitOption.FOLLOW_LINKS)
     } else {
       Files.find(path, maxDepth, predicate)
@@ -169,9 +170,9 @@ final class RichPath(val path: Path) {
 
   /** @return a stream of the parents
     */
-  def parents: Stream[Path] = {
+  def parents: LazyList[Path] = {
     parent match {
-      case None    => Stream.empty
+      case None    => LazyList.empty
       case Some(p) => p #:: p.parents
     }
   }
@@ -242,7 +243,7 @@ final class RichPath(val path: Path) {
     Files.getPosixFilePermissions(path, linkOpts: _*).asScala.toSet
   }
 
-  def size = Files.size(path)
+  def size = if exists() then Files.size(path) else 0L
 
   def exists(linkOpts: LinkOption*) = Files.exists(path, linkOpts: _*)
 

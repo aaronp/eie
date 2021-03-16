@@ -2,6 +2,8 @@ package eie.io
 
 class PathTreeNodeTest extends BaseIOSpec {
 
+  import RichPathTest._
+
   "path.renderTree" should {
     "render the path as a tree" in {
       withDir { dir =>
@@ -25,36 +27,36 @@ class PathTreeNodeTest extends BaseIOSpec {
 
         val expected =
           """root
-                         >     +- childA
-                         >     |      +- grandChildA
-                         >     |      |        +- A
-                         >     |      |        +- B
-                         >     |      |           +- B1
-                         >     |      |           +- B2
-                         >     |      |        +- C
-                         >     |      |        +- X
-                         >     |      |           +- foo1
-                         >     |      |           +- foo2
-                         >     |      |           +- meh
-                         >     |      +- grandChildB
-                         >     |              +- A
-                         >     |              +- B
-                         >     |              +- greatGrandChild
-                         >     |                        +- foo
-                         >     +- childB
-                         >     |      +- grandChildA
-                         >     |      |        +- greatGrandChild
-                         >     |      |                  +- foo
-                         >     |      +- grandChildB
-                         >     |              +- greatGrandChild
-                         >     |                        +- bar
-                         >     +- childC
-                         >     +- childD
-                         >           +- meh
-                         >               +- xyz""".stripMargin('>')
+                         |     +- childA
+                         |     😃      +- grandChildA
+                         |     😃      😃        +- A
+                         |     😃      😃        +- B
+                         |     😃      😃           +- B1
+                         |     😃      😃           +- B2
+                         |     😃      😃        +- C
+                         |     😃      😃        +- X
+                         |     😃      😃           +- foo1
+                         |     😃      😃           +- foo2
+                         |     😃      😃           +- meh
+                         |     😃      +- grandChildB
+                         |     😃              +- A
+                         |     😃              +- B
+                         |     😃              +- greatGrandChild
+                         |     😃                        +- foo
+                         |     +- childB
+                         |     😃      +- grandChildA
+                         |     😃      😃        +- greatGrandChild
+                         |     😃      😃                  +- foo
+                         |     😃      +- grandChildB
+                         |     😃              +- greatGrandChild
+                         |     😃                        +- bar
+                         |     +- childC
+                         |     +- childD
+                         |           +- meh
+                         |               +- xyz""".stripMargin
 
-        withClue(path.renderTree) {
-          path.renderTree shouldBe expected
+        withClue(path.renderTree()) {
+          check(path.renderTree(), expected)
         }
       }
     }

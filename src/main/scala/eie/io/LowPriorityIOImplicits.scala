@@ -1,6 +1,7 @@
 package eie.io
 
 import java.nio.file._
+import scala.language.implicitConversions
 
 /**
   * Contains some 'pimped' types (adding <string>.asPath), and RichPath
@@ -15,17 +16,16 @@ trait LowPriorityIOImplicits {
     *
     * @return a pimped string
     */
-  implicit class RichPathString(val path: String) {
+  extension(path: String)
     def asPath = Paths.get(path)
-  }
 
-  implicit def asRichPath(path: Path) = new RichPath(path)
+  given Conversion[String, RichPath] = new RichPath(_)
 
+  given Conversion[Path, RichPath] = new RichPath(_)
 }
 
-object LowPriorityIOImplicits {
-
+object LowPriorityIOImplicits:
   val DefaultWriteOps: Set[OpenOption] = {
     Set(StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.DSYNC)
   }
-}
+end LowPriorityIOImplicits

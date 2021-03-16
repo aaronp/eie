@@ -5,7 +5,9 @@ import java.util.UUID
 
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.time.{Millis, Seconds, Span}
-import org.scalatest.{BeforeAndAfterAll, Matchers, WordSpec}
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.BeforeAndAfterAll
+import org.scalatest.matchers.should.*
 
 import scala.concurrent.duration._
 import scala.concurrent.{Await, Future}
@@ -17,7 +19,7 @@ import scala.util.Properties
   *
   * See http://www.scalatest.org/user_guide/defining_base_classes
   */
-abstract class BaseIOSpec extends WordSpec with Matchers with ScalaFutures with LowPriorityIOImplicits with BeforeAndAfterAll {
+abstract class BaseIOSpec extends AnyWordSpec with Matchers with ScalaFutures with LowPriorityIOImplicits with BeforeAndAfterAll {
 
   /**
     * All the timeouts!
@@ -31,12 +33,10 @@ abstract class BaseIOSpec extends WordSpec with Matchers with ScalaFutures with 
 
   def testClassName = getClass.getSimpleName.filter(_.isLetterOrDigit)
 
-  implicit override def patienceConfig =
-    PatienceConfig(timeout = scaled(Span(testTimeout.toSeconds, Seconds)), interval = scaled(Span(150, Millis)))
+  override given patienceConfig : PatienceConfig = PatienceConfig(timeout = scaled(Span(testTimeout.toSeconds, Seconds)), interval = scaled(Span(150, Millis)))
 
-  implicit def richFuture[T](fut: Future[T]) = new {
+  extension[T](fut: Future[T])
     def block = Await.result(fut, testTimeout)
-  }
 
   def srcDir: Path = BaseIOSpec.srcDir
 

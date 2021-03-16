@@ -3,15 +3,19 @@ import org.scoverage.coveralls.Imports.CoverallsKeys._
 val repo = "eie"
 name := repo
 
-libraryDependencies ++= Dependencies.IO
+libraryDependencies ++= List(
+  "org.scalatest"        %% "scalatest"               % "3.2.6"  % Test,
+  "org.pegdown"          % "pegdown"                  % "1.6.0"  % Test,
+  "junit"                % "junit"                    % "4.12"   % Test,
+  "com.vladsch.flexmark" % "flexmark-profile-pegdown" % "0.36.8" % Test,
+  "javax.xml.bind"       % "jaxb-api"                 % "2.3.0"  % "provided"
+)
 
-val username            = "aaronp"
-val scalaTwelve         = "2.12.10"
-val scalaThirteen       = "2.13.0"
-val defaultScalaVersion = scalaThirteen
-crossScalaVersions := Seq(scalaTwelve, scalaThirteen)
+val username     = "aaronp"
+val dottyVersion = "3.0.0-RC1"
+crossScalaVersions := Seq(dottyVersion)
 organization := s"com.github.${username}"
-scalaVersion := defaultScalaVersion
+scalaVersion := dottyVersion
 resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 enablePlugins(GitVersioning)
 enablePlugins(GhpagesPlugin)
@@ -31,16 +35,18 @@ scalacOptions ++= List(scalaVersion.value)
   .filter(_.contains("2.13"))
   .map(_ => "-Ymacro-annotations")
 
+scalacOptions += "-language:implicitConversions"
+
 //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 
 buildInfoKeys := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion)
 buildInfoPackage := s"${repo}.build"
 
 // see http://www.scalatest.org/user_guide/using_scalatest_with_sbt
-testOptions in Test += (Tests.Argument(TestFrameworks.ScalaTest, "-h", s"target/scalatest-reports", "-oN"))
+Test / testOptions += (Tests.Argument(TestFrameworks.ScalaTest, "-h", s"target/scalatest-reports", "-oN"))
 
 // see https://www.scala-sbt.org/sbt-site/api-documentation.html
-siteSubdirName in SiteScaladoc := "api/latest"
+SiteScaladoc / siteSubdirName := "api/latest"
 
 scalacOptions in (Compile, doc) ++= Seq("-groups", "-implicits")
 
@@ -56,8 +62,8 @@ coverageMinimum := 80
 coverageFailOnMinimum := true
 
 // see http://scalameta.org/scalafmt/
-scalafmtOnCompile in ThisBuild := true
-scalafmtVersion in ThisBuild := "1.4.0"
+ThisBuild / scalafmtOnCompile := true
+ThisBuild / scalafmtVersion := "1.4.0"
 
 // Define a `Configuration` for each project, as per http://www.scala-sbt.org/sbt-site/api-documentation.html
 //val Api = config("api")
@@ -90,7 +96,7 @@ publishMavenStyle := true
 pomIncludeRepository := (_ => false)
 
 // To sync with Maven central, you need to supply the following information:
-pomExtra in Global := {
+Global / pomExtra := {
   <url>https://github.com/${username}/${repo}
   </url>
     <licenses>
