@@ -1,6 +1,6 @@
 # EIE
 
-![sbt test](https://travis-ci.org/aaronp/eie.svg?branch=master)
+![sbt test](https://github.com/aaronp/eie/actions/workflows/scala.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/aaronp/eie/badge.svg?branch=master)](https://coveralls.io/github/aaronp/eie?branch=master)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.aaronp/eie_2.13/badge.png)](https://maven-badges.herokuapp.com/maven-central/com.github.aaronp/eie_2.13)
 [![Scaladoc](https://javadoc-badge.appspot.com/com.github.aaronp/eie_2.13.svg?label=scaladoc)](https://javadoc-badge.appspot.com/com.github.aaronp/eie_2.13)
