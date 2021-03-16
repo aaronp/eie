@@ -362,4 +362,13 @@ final class RichPath(val path: Path) {
     }
     java.nio.file.Files.move(path, target, options: _*)
   }
+
+  def copyTo(dest: Path, options: CopyOption*) = {
+    val target = if (dest.isDir) {
+      dest.resolve(path.fileName)
+    } else {
+      dest
+    }
+    java.nio.file.Files.copy(path, target, options: _*)
+  }
 }

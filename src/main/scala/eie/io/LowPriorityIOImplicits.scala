@@ -21,8 +21,6 @@ trait LowPriorityIOImplicits {
 
   implicit def asRichPath(path: Path) = new RichPath(path)
 
-//  implicit def timestampOrdering = Ordering.by[Timestamp, Long](_.toEpochSecond)
-
 }
 
 object LowPriorityIOImplicits {
