@@ -2,8 +2,8 @@
 
 ![sbt test](https://github.com/aaronp/eie/actions/workflows/scala.yml/badge.svg)
 [![Coverage Status](https://coveralls.io/repos/github/aaronp/eie/badge.svg?branch=master)](https://coveralls.io/github/aaronp/eie?branch=master)
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.aaronp/eie_2.13/badge.png)](https://maven-badges.herokuapp.com/maven-central/com.github.aaronp/eie_2.13)
-[![Scaladoc](https://javadoc-badge.appspot.com/com.github.aaronp/eie_2.13.svg?label=scaladoc)](https://javadoc-badge.appspot.com/com.github.aaronp/eie_2.13)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.github.aaronp/eie_3.0.0-RC1/badge.png)](https://maven-badges.herokuapp.com/maven-central/com.github.aaronp/eie_3.0.0-RC1)
+[![Scaladoc](https://javadoc-badge.appspot.com/com.github.aaronp/eie_3.0.0-RC1.svg?label=scaladoc)](https://javadoc-badge.appspot.com/com.github.aaronp/eie_3.0.0-RC1)
 
 
 'EIE' is yet another IO project, written in scala. It's inspiration is
