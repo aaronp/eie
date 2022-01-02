@@ -1,6 +1,7 @@
 package eie.io
 
 import java.nio.file.Path
+import LowPriorityIOImplicits.{given, *}
 
 /**
   * A means to pretty-print a file system layout
@@ -43,8 +44,10 @@ private[io] object PathTreeNode {
 private[io] case class PathTreeLeaf(leaf: Path) extends PathTreeNode {
   override def asTree(indent: String = "", isLastChild: Boolean = false) = List(s"$indent+- ${leaf.fileName}")
 }
+
 private[io] case class PathTreeDir(dir: Path, filterOpt: Option[Path => Boolean]) extends PathTreeNode {
   def children: Array[PathTreeNode] = {
+
     val all  = dir.children
     val kids = filterOpt.fold(all)(p => all.filter(p))
 

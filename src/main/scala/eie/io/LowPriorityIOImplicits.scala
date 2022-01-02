@@ -2,11 +2,12 @@ package eie.io
 
 import java.nio.file._
 import scala.language.implicitConversions
+import scala.language.postfixOps
 
-/**
-  * Contains some 'pimped' types (adding <string>.asPath), and RichPath
-  */
 trait LowPriorityIOImplicits {
+  given Conversion[String, RichPath] = new RichPath(_ : String)
+
+  given Conversion[Path, RichPath] = new RichPath(_ : Path)
 
   /**
     * exposes 'toPath' on strings, for e.g.
@@ -16,16 +17,17 @@ trait LowPriorityIOImplicits {
     *
     * @return a pimped string
     */
-  extension(path: String)
+  extension(path: String) {
     def asPath = Paths.get(path)
-
-  given Conversion[String, RichPath] = new RichPath(_)
-
-  given Conversion[Path, RichPath] = new RichPath(_)
+  }
 }
 
-object LowPriorityIOImplicits:
+/**
+  * Contains some 'pimped' types (adding <string>.asPath), and RichPath
+  */
+object LowPriorityIOImplicits extends LowPriorityIOImplicits {
+
   val DefaultWriteOps: Set[OpenOption] = {
     Set(StandardOpenOption.CREATE, StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING, StandardOpenOption.DSYNC)
   }
-end LowPriorityIOImplicits
+}

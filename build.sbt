@@ -1,22 +1,19 @@
-import org.scoverage.coveralls.Imports.CoverallsKeys._
-
 val repo = "eie"
 name := repo
 
 libraryDependencies ++= List(
-  "org.scalatest"        %% "scalatest"               % "3.2.6"  % Test,
+  "org.scalatest"        %% "scalatest"               % "3.2.10"  % Test,
   "org.pegdown"          % "pegdown"                  % "1.6.0"  % Test,
-  "junit"                % "junit"                    % "4.12"   % Test,
-  "com.vladsch.flexmark" % "flexmark-profile-pegdown" % "0.36.8" % Test,
-  "javax.xml.bind"       % "jaxb-api"                 % "2.3.0"  % "provided"
+  "junit"                % "junit"                    % "4.13.2"   % Test,
+  "com.vladsch.flexmark" % "flexmark-profile-pegdown" % "0.62.2" % Test,
+  "javax.xml.bind"       % "jaxb-api"                 % "2.3.1"  % "provided"
 )
 
 val username     = "aaronp"
-val dottyVersion = "3.0.0-RC1"
-crossScalaVersions := Seq(dottyVersion)
+
 organization := s"com.github.${username}"
-scalaVersion := dottyVersion
-resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
+ThisBuild / scalaVersion := "3.1.0"
+ThisBuild / resolvers += "Sonatype OSS Snapshots" at "https://oss.sonatype.org/content/repositories/snapshots"
 enablePlugins(GitVersioning)
 enablePlugins(GhpagesPlugin)
 enablePlugins(PamfletPlugin)
@@ -29,13 +26,19 @@ exportJars := false
 javacOptions ++= Seq("-source", "1.8", "-target", "1.8", "-XX:MaxMetaspaceSize=1g")
 git.useGitDescribe := false
 
-coverallsTokenFile := Option((Path.userHome / ".sbt" / ".coveralls.eie").asPath.toString)
+// coverallsTokenFile := Option((Path.userHome / ".sbt" / ".coveralls.eie").asPath.toString)
 
-scalacOptions ++= List(scalaVersion.value)
-  .filter(_.contains("2.13"))
-  .map(_ => "-Ymacro-annotations")
+//scalacOptions ++= List(scalaVersion.value)
+//  .filter(_.contains("2.13"))
+//  .map(_ => "-Ymacro-annotations")
 
-scalacOptions += "-language:implicitConversions"
+ThisBuild / scalacOptions ++= List(
+  "-language:implicitConversions",
+//  "-source:3.0-migration",
+//  "-rewrite",
+//  "-new-syntax",
+//  "-indent",
+)
 
 //addCompilerPlugin("org.scalamacros" % "paradise" % "2.1.0" cross CrossVersion.full)
 

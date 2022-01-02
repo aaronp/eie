@@ -2,11 +2,12 @@ package eie.io
 
 import java.io.{InputStream, OutputStream, OutputStreamWriter, PrintWriter}
 import java.nio.charset.{Charset, StandardCharsets}
-import java.nio.file._
+import java.nio.file.*
 import java.nio.file.attribute.{BasicFileAttributes, FileAttribute, FileTime, PosixFilePermission}
 import java.time.{Instant, ZoneId, ZonedDateTime}
 import java.util.function.BiPredicate
-import scala.collection.JavaConverters._
+import scala.jdk.CollectionConverters.*
+import LowPriorityIOImplicits.{given, *}
 import scala.language.implicitConversions
 
 /**
@@ -16,7 +17,7 @@ import scala.language.implicitConversions
   */
 final class RichPath(val path: Path) {
 
-  def this(path: String) = this(Paths.get(path))
+  def this(path: String) = this(java.nio.file.Paths.get(path))
 
   def defaultWriteOpts: Set[OpenOption] = LowPriorityIOImplicits.DefaultWriteOps
 
